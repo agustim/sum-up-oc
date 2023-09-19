@@ -1,4 +1,4 @@
-export interface SumUpPlugin {
+export interface SumUpOCPlugin {
   login(options: LoginOptions): Promise<SumUpResponse>;
   checkout(options: CheckoutOptions): Promise<SumUpResponse>;
 }
