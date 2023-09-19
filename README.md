@@ -15,6 +15,7 @@ npx cap sync
 
 * [`login(...)`](#login)
 * [`checkout(...)`](#checkout)
+* [`logout()`](#logout)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -48,6 +49,15 @@ checkout(options: CheckoutOptions) => Promise<SumUpResponse>
 | **`options`** | <code><a href="#checkoutoptions">CheckoutOptions</a></code> |
 
 **Returns:** <code>Promise&lt;<a href="#sumupresponse">SumUpResponse</a>&gt;</code>
+
+--------------------
+
+
+### logout()
+
+```typescript
+logout() => void
+```
 
 --------------------
 

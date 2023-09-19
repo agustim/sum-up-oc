@@ -19,4 +19,7 @@ export class SumUpOCWeb extends WebPlugin implements SumUpOCPlugin {
     console.log('checkout', options);
     return { code: 1, message: 'Not implemented on web.' };
   }
+  async logout() {
+    console.log('logout');
+  }
 }

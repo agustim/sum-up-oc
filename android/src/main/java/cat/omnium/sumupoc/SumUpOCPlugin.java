@@ -40,26 +40,7 @@ public class SumUpOCPlugin extends Plugin {
 
     @PluginMethod
     public void login(PluginCall call) {
-        // String affiliateKey = call.getString("affiliateKey");
-        
-        // Intent intent = new Intent(getActivity(), LoginActivity.class);
-        
-        // Log.d(TAG, "login");
-        // intent.putExtra("isAffiliate", true);
-        // intent.putExtra("affiliate-key", affiliateKey);
 
-        // SumUpLogin sumupLogin;
-        // if (call.hasOption("accessToken")) {
-        //     String accessToken = call.getString("accessToken");
-        //     sumupLogin = SumUpLogin.builder(affiliateKey).accessToken(accessToken).build();
-        // } else {
-        //     sumupLogin = SumUpLogin.builder(affiliateKey).build();
-        // }
-        // Log.d(TAG, "login: " + sumupLogin.toString());
-        // SumUpAPI.openLoginActivity(getActivity(), sumupLogin, REQUEST_CODE_LOGIN);
-        // Log.d(TAG, "login: after openLoginActivity");
-
-        // startActivityForResult(call, intent, "handleResponse");
         Log.d(TAG, "login");
         String affiliateKey = call.getString("affiliateKey");
 
@@ -78,6 +59,12 @@ public class SumUpOCPlugin extends Plugin {
         }
 
         startActivityForResult(call, intent, "handleResponse");
+    }
+
+    @PluginMethod
+    public void logout(PluginCall call) {
+        Log.d(TAG, "logout");
+        SumUpAPI.logout();   
     }
 
     @PluginMethod

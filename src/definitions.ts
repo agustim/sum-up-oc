@@ -1,6 +1,7 @@
 export interface SumUpOCPlugin {
   login(options: LoginOptions): Promise<SumUpResponse>;
   checkout(options: CheckoutOptions): Promise<SumUpResponse>;
+  logout(): void;
 }
 
 export interface LoginOptions {
