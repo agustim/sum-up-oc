@@ -40,24 +40,42 @@ public class SumUpOCPlugin extends Plugin {
 
     @PluginMethod
     public void login(PluginCall call) {
-        String affiliateKey = call.getString("affiliateKey");
+        // String affiliateKey = call.getString("affiliateKey");
         
-        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        // Intent intent = new Intent(getActivity(), LoginActivity.class);
         
+        // Log.d(TAG, "login");
+        // intent.putExtra("isAffiliate", true);
+        // intent.putExtra("affiliate-key", affiliateKey);
+
+        // SumUpLogin sumupLogin;
+        // if (call.hasOption("accessToken")) {
+        //     String accessToken = call.getString("accessToken");
+        //     sumupLogin = SumUpLogin.builder(affiliateKey).accessToken(accessToken).build();
+        // } else {
+        //     sumupLogin = SumUpLogin.builder(affiliateKey).build();
+        // }
+        // Log.d(TAG, "login: " + sumupLogin.toString());
+        // SumUpAPI.openLoginActivity(getActivity(), sumupLogin, REQUEST_CODE_LOGIN);
+        // Log.d(TAG, "login: after openLoginActivity");
+
+        // startActivityForResult(call, intent, "handleResponse");
         Log.d(TAG, "login");
+        String affiliateKey = call.getString("affiliateKey");
+
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.putExtra("isAffiliate", true);
         intent.putExtra("affiliate-key", affiliateKey);
 
-        SumUpLogin sumupLogin;
+        Log.d(TAG, "affiliateKey: " + affiliateKey);
+        Log.d(TAG, "intent: " + intent.toString());
+    
         if (call.hasOption("accessToken")) {
+            Log.d(TAG, "hasOption accessToken");
             String accessToken = call.getString("accessToken");
-            sumupLogin = SumUpLogin.builder(affiliateKey).accessToken(accessToken).build();
-        } else {
-            sumupLogin = SumUpLogin.builder(affiliateKey).build();
+            Log.d(TAG, "accessToken: " + accessToken);
+            intent.putExtra("access-token", accessToken);
         }
-        Log.d(TAG, "login: " + sumupLogin.toString());
-        SumUpAPI.openLoginActivity(getActivity(), sumupLogin, REQUEST_CODE_LOGIN);
-        Log.d(TAG, "login: after openLoginActivity");
 
         startActivityForResult(call, intent, "handleResponse");
     }
