@@ -56,8 +56,10 @@ checkout(options: CheckoutOptions) => Promise<SumUpResponse>
 ### logout()
 
 ```typescript
-logout() => void
+logout() => Promise<SumUpResponse>
 ```
+
+**Returns:** <code>Promise&lt;<a href="#sumupresponse">SumUpResponse</a>&gt;</code>
 
 --------------------
 

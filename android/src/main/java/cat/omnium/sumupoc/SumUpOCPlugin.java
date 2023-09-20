@@ -64,7 +64,17 @@ public class SumUpOCPlugin extends Plugin {
     @PluginMethod
     public void logout(PluginCall call) {
         Log.d(TAG, "logout");
-        SumUpAPI.logout();   
+
+        JSObject ret = new JSObject();
+        if (SumUpAPI.isLoggedIn()) {
+            SumUpAPI.logout();
+            ret.put("code", 0);
+            ret.put("message", "Logged out");
+        } else {
+            ret.put("code", 1);
+            ret.put("message", "Not logged in");
+        } 
+        call.resolve(ret);
     }
 
     @PluginMethod
@@ -143,4 +153,5 @@ public class SumUpOCPlugin extends Plugin {
             call.reject(resultMessage, String.format("%d", resultCode));
         }
     }
+
 }

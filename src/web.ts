@@ -21,5 +21,6 @@ export class SumUpOCWeb extends WebPlugin implements SumUpOCPlugin {
   }
   async logout() {
     console.log('logout');
+    return { code: 1, message: 'Not implemented on web.' };
   }
 }
