@@ -13,15 +13,17 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.ActivityCallback;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.sumup.merchant.reader.api.SumUpAPI;
-import com.sumup.merchant.reader.api.SumUpLogin;
-import com.sumup.merchant.reader.api.SumUpAPIHelper;
 import com.sumup.merchant.reader.api.SumUpPayment;
 import com.sumup.merchant.reader.api.SumUpState;
 import com.sumup.merchant.reader.identitylib.ui.activities.LoginActivity;
+import com.sumup.merchant.reader.models.TransactionInfo;
+import com.sumup.merchant.reader.ui.activities.CardReaderPageActivity;
+import com.sumup.merchant.reader.ui.activities.CardReaderPaymentAPIDrivenPageActivity;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 
 
 @CapacitorPlugin(name = "SumUpOC")
@@ -79,58 +81,75 @@ public class SumUpOCPlugin extends Plugin {
 
     @PluginMethod
     public void checkout(PluginCall call) {
-        Double total = call.getDouble("total");
-        SumUpPayment.Currency currency = SumUpPayment.Currency.valueOf(call.getString("currency"));
 
-        if (total == null) {
-            return;
+        JSObject data = call.getData();
+
+        if (data == null) {
+            call.reject("options cannot be empty");
         }
 
-        Intent intent = SumUpAPIHelper.getPaymentIntent(getActivity());
-        intent.putExtra("total", new BigDecimal(total));
-        intent.putExtra("currency", currency.getIsoCode());
+        // We reject if its not, but this does not get recognized
+        assert data != null;
 
-        if (call.hasOption("title")) {
-            String title = call.getString("title");
-            intent.putExtra("title", title);
+        if (!data.has("total")) {
+            call.reject("missing total");
         }
 
-        if (call.hasOption("receiptEmail")) {
-            String receiptEmail = call.getString("receiptEmail");
-            intent.putExtra("receipt-email", receiptEmail);
+        if (!data.has("currency")) {
+            call.reject("missing currency");
+        }
+        SumUpPayment.Currency currency = SumUpPayment.Currency.valueOf(data.getString("currency"));
+
+        Intent CheckoutIntent = new Intent(this.getActivity(), CardReaderPaymentAPIDrivenPageActivity.class);
+        CheckoutIntent.putExtra(SumUpAPI.Param.TOTAL, new BigDecimal(data.getString("total")));
+        CheckoutIntent.putExtra(SumUpAPI.Param.CURRENCY, currency.getIsoCode());
+
+        if (data.has("title")) {
+            CheckoutIntent.putExtra(SumUpAPI.Param.TITLE, data.getString("title"));
         }
 
-        if (call.hasOption("receiptSMS")) {
-            String receiptSMS = call.getString("receiptSMS");
-            intent.putExtra("receipt-mobilephone", receiptSMS);
+        if (data.has("receiptEmail")) {
+            CheckoutIntent.putExtra(SumUpAPI.Param.RECEIPT_EMAIL, data.getString("receiptEmail"));
         }
 
-        if (call.hasOption("foreignTransactionId")) {
-            String foreignTransactionId = call.getString("foreignTransactionId");
-            intent.putExtra("foreign-tx-id", foreignTransactionId);
+        if (data.has("receiptSMS")) {
+            CheckoutIntent.putExtra(SumUpAPI.Param.RECEIPT_PHONE, data.getString("receiptSMS"));
         }
 
-        if (call.hasOption("skipSuccessScreen")) {
-            Boolean skipSuccessScreen = call.getBoolean("skipSuccessScreen");
-            intent.putExtra("skip-screen-success", skipSuccessScreen);
+        if (data.has("foreignTransactionId")) {
+            CheckoutIntent.putExtra(SumUpAPI.Param.FOREIGN_TRANSACTION_ID, data.getString("foreignTransactionId"));
+        } else {
+            CheckoutIntent.putExtra(SumUpAPI.Param.FOREIGN_TRANSACTION_ID, UUID.randomUUID().toString());
         }
 
-        if (call.hasOption("additionalInfo")) {
-            JSObject jsAdditionalInfo = call.getObject("additionalInfo");
-            HashMap<String, String> additionalInfo = new HashMap<>();
-            for (Iterator<String> it = jsAdditionalInfo.keys(); it.hasNext(); ) {
+        if (data.has("skipSuccessScreen")) {
+            CheckoutIntent.putExtra(SumUpAPI.Param.SKIP_SUCCESS_SCREEN, true);
+        }
+
+        if (data.has("skipFailedScreen")) {
+            CheckoutIntent.putExtra(SumUpAPI.Param.SKIP_FAILED_SCREEN, true);
+        }
+
+        JSObject info = data.getJSObject("additionalInfo");
+        if (info != null) {
+            HashMap<String, String> infoObject = new HashMap<>();
+            for (Iterator<String> it = info.keys(); it.hasNext(); ) {
                 String key = it.next();
-                additionalInfo.put(key, jsAdditionalInfo.getString(key));
+                infoObject.put(key, info.getString(key));
             }
 
-            intent.putExtra("addition-info", additionalInfo);
+            CheckoutIntent.putExtra(SumUpAPI.Param.ADDITIONAL_INFO, infoObject);
         }
 
-        startActivityForResult(call, intent, "handleResponse");
+        startActivityForResult(call, CheckoutIntent, "handleResponse");
     }
 
     @ActivityCallback
     public void handleResponse(PluginCall call, ActivityResult result) {
+        if (call == null) {
+            return;
+        }
+
         Intent data = result.getData();
         if (data == null) {
             return;
